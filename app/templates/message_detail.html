@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="panel detail-panel">
+    <div class="panel-header">
+        <div>
+            <p class="eyebrow">Message Detail</p>
+            <h2>{{ message.subject or "(No subject)" }}</h2>
+        </div>
+        <a href="/messages">Back to messages</a>
+    </div>
+
+    <div class="detail-grid">
+        <div class="detail-card">
+            <h3>Metadata</h3>
+            <p><strong>From:</strong> {{ message.sender or "Unknown sender" }}</p>
+            <p><strong>Received:</strong> {{ message.received_at|datetimefmt }}</p>
+            <p><strong>Gmail ID:</strong> <code>{{ message.gmail_message_id }}</code></p>
+            <p><strong>Thread ID:</strong> <code>{{ message.thread_id }}</code></p>
+            <p><strong>Label status:</strong> {{ "Applied to Gmail" if message.label_applied else "No label applied" }}</p>
+        </div>
+
+        <div class="detail-card">
+            <h3>Classification</h3>
+            {% if message.classification %}
+                <p><strong>Verdict:</strong> {{ message.classification.verdict }}</p>
+                <p><strong>Confidence:</strong> {{ message.classification.confidence|percentfmt }}</p>
+                <p><strong>Model:</strong> {{ message.classification.provider_model or "Unknown" }}</p>
+                <p><strong>Reasons:</strong></p>
+                <ul class="reasons">
+                    {% for reason in message.classification.reasons %}
+                        <li>{{ reason }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No classification result exists for this message.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="detail-card body-card">
+        <h3>Normalized Body</h3>
+        <pre>{{ message.normalized_text }}</pre>
+    </div>
+</section>
+{% endblock %}

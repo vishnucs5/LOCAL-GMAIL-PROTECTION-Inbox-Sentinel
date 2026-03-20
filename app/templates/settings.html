@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="panel settings-panel">
+    <div class="panel-header">
+        <div>
+            <p class="eyebrow">Runtime Controls</p>
+            <h2>Settings</h2>
+        </div>
+        <p>Changes apply immediately to new sync runs.</p>
+    </div>
+
+    <form class="settings-form" method="post" action="/settings">
+        <label>
+            <span>Polling interval (seconds)</span>
+            <input type="number" min="15" max="3600" name="poll_interval_seconds" value="{{ runtime_settings.poll_interval_seconds }}">
+        </label>
+
+        <label>
+            <span>Spam threshold</span>
+            <input type="number" min="0" max="1" step="0.01" name="spam_threshold" value="{{ runtime_settings.spam_threshold }}">
+        </label>
+
+        <label>
+            <span>Max body chars sent to AI</span>
+            <input type="number" min="500" max="20000" name="max_body_chars" value="{{ runtime_settings.max_body_chars }}">
+        </label>
+
+        <label>
+            <span>Gmail label name</span>
+            <input type="text" name="gmail_label_name" value="{{ runtime_settings.gmail_label_name }}">
+        </label>
+
+        <button class="primary" type="submit">Save settings</button>
+    </form>
+
+    <div class="detail-grid">
+        <div class="detail-card">
+            <h3>Integration readiness</h3>
+            <p><strong>Google OAuth:</strong> {{ "Configured" if google_ready else "Missing GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET" }}</p>
+            <p><strong>AI API:</strong> {{ "Configured" if ai_ready else "Missing AI_API_KEY" }}</p>
+            <p><strong>Connected inbox:</strong> {{ account.email if account else "No mailbox connected" }}</p>
+        </div>
+        <div class="detail-card">
+            <h3>Safety model</h3>
+            <p>The app only auto-labels messages when the spam verdict is confident enough.</p>
+            <p>Low-confidence messages stay in the dashboard for review without Gmail mailbox changes.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

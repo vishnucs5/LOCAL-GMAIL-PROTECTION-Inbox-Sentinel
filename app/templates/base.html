@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ request.app.state.settings.app_name }}</title>
+    <link rel="stylesheet" href="{{ request.url_for('static', path='styles.css') }}">
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+</head>
+<body>
+    <div class="shell">
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">LOCAL GMAIL PROTECTION</p>
+                <h1><a href="/">Inbox Sentinel</a></h1>
+            </div>
+            <nav class="nav">
+                <a href="/">Dashboard</a>
+                <a href="/messages">Messages</a>
+                <a href="/settings">Settings</a>
+            </nav>
+        </header>
+
+        {% set report = last_sync_report %}
+        {% include "_sync_status.html" %}
+
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

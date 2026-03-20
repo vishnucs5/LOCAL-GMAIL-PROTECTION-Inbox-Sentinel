@@ -1,0 +1,28 @@
+<div
+    id="sync-status-shell"
+    class="status-banner {{ report.status if report else 'idle' }}"
+    {% if report and report.status == "busy" %}
+        hx-get="/sync/status"
+        hx-trigger="every 3s"
+        hx-swap="outerHTML"
+    {% endif %}
+>
+    <div id="sync-status" class="sync-status {{ report.status if report else 'idle' }}" aria-live="polite">
+        {% if report %}
+            <strong>{{ report.status|upper }}</strong>
+            <span>
+                {{ report.fetched_count }} fetched,
+                {{ report.classified_count }} classified,
+                {{ report.labeled_count }} labeled
+                {% if report.error %}- {{ report.error }}{% endif %}
+            </span>
+            {% if report.notes %}
+                <div class="sync-notes">
+                    {{ report.notes | join(" | ") }}
+                </div>
+            {% endif %}
+        {% else %}
+            <span>No sync has run yet.</span>
+        {% endif %}
+    </div>
+</div>

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="panel">
+    <div class="panel-header">
+        <div>
+            <p class="eyebrow">Message Log</p>
+            <h2>Stored messages</h2>
+        </div>
+        <p>{{ messages|length }} messages stored locally</p>
+    </div>
+
+    {% if messages %}
+        <div class="message-list">
+            {% for message in messages %}
+                <a class="message-row" href="/messages/{{ message.gmail_message_id }}">
+                    <div class="message-main">
+                        <p class="sender">{{ message.sender or "Unknown sender" }}</p>
+                        <h4>{{ message.subject or "(No subject)" }}</h4>
+                        <p class="snippet">{{ message.normalized_text[:220] }}</p>
+                    </div>
+                    <div class="message-meta">
+                        {% if message.classification %}
+                            <span class="pill {{ message.classification.verdict }}">{{ message.classification.verdict }}</span>
+                            <span>{{ message.classification.confidence|percentfmt }}</span>
+                        {% else %}
+                            <span class="pill pending">pending</span>
+                        {% endif %}
+                        <span>{{ "Labeled" if message.label_applied else "Not labeled" }}</span>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="empty-state">There are no stored messages yet.</p>
+    {% endif %}
+</section>
+{% endblock %}

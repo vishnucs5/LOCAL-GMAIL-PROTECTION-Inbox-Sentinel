@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gmail-spam-sentinel"
+version = "0.1.0"
+description = "Localhost Gmail spam detection dashboard"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "apscheduler>=3.10,<4.0",
+  "beautifulsoup4>=4.12,<5.0",
+  "cryptography>=43.0,<44.0",
+  "fastapi>=0.115,<1.0",
+  "google-api-python-client>=2.149,<3.0",
+  "google-auth-httplib2>=0.2,<1.0",
+  "google-auth-oauthlib>=1.2,<2.0",
+  "httplib2>=0.22,<1.0",
+  "httpx>=0.28,<1.0",
+  "itsdangerous>=2.2,<3.0",
+  "jinja2>=3.1,<4.0",
+  "pydantic-settings>=2.6,<3.0",
+  "python-dotenv>=1.0,<2.0",
+  "python-multipart>=0.0.20,<1.0",
+  "sqlalchemy>=2.0,<3.0",
+  "uvicorn[standard]>=0.32,<1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3,<9.0",
+  "pytest-cov>=6.0,<7.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

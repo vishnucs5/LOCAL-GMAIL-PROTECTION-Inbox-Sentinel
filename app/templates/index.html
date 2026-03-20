@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-copy">
+        <p class="eyebrow">Single-Mailbox Spam Detection</p>
+        <h2>Watch every incoming Gmail message and label risky mail before it gets buried.</h2>
+        <p class="lede">
+            Inbox Sentinel stores your mail scan history locally, scores new messages with an AI classifier,
+            and applies the <code>{{ runtime_settings.gmail_label_name }}</code> label only when the score is confident.
+        </p>
+        <div class="cta-row">
+            {% if account %}
+                <form method="post" action="/auth/google/disconnect">
+                    <button class="ghost" type="submit">Disconnect {{ account.email }}</button>
+                </form>
+                <form
+                    method="post"
+                    action="/sync/run"
+                    hx-post="/sync/run"
+                    hx-target="#sync-status-shell"
+                    hx-swap="outerHTML"
+                    hx-indicator="#sync-progress"
+                >
+                    <button class="primary" type="submit">Scan Inbox Now</button>
+                    <span id="sync-progress" class="sync-progress">Scanning inbox...</span>
+                </form>
+            {% else %}
+                <a class="primary link-button" href="/auth/google/start">Connect Gmail</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="hero-panel">
+        <p><strong>Google OAuth:</strong> {{ "Ready" if google_ready else "Missing credentials" }}</p>
+        <p><strong>AI Classifier:</strong> {{ "Ready" if ai_ready else "Missing API key" }}</p>
+        <p><strong>Polling:</strong> Every {{ runtime_settings.poll_interval_seconds }} seconds</p>
+        <p><strong>Spam threshold:</strong> {{ runtime_settings.spam_threshold|percentfmt }}</p>
+        <p><strong>Last sync:</strong> {{ account.last_sync_at|datetimefmt if account else "Never" }}</p>
+    </div>
+</section>
+
+<section class="stats-grid">
+    <article class="stat-card">
+        <span>Total Scanned</span>
+        <strong>{{ stats.total_messages }}</strong>
+    </article>
+    <article class="stat-card">
+        <span>Spam Verdicts</span>
+        <strong>{{ stats.spam_messages }}</strong>
+    </article>
+    <article class="stat-card">
+        <span>Labeled in Gmail</span>
+        <strong>{{ stats.labeled_messages }}</strong>
+    </article>
+    <article class="stat-card">
+        <span>Needs Review</span>
+        <strong>{{ stats.review_needed }}</strong>
+    </article>
+</section>
+
+<section class="panel">
+    <div class="panel-header">
+        <div>
+            <p class="eyebrow">Recent Mail</p>
+            <h3>Latest classifications</h3>
+        </div>
+        <a href="/messages">View all messages</a>
+    </div>
+    {% if recent_messages %}
+        <div class="message-list">
+            {% for message in recent_messages %}
+                <a class="message-row" href="/messages/{{ message.gmail_message_id }}">
+                    <div class="message-main">
+                        <p class="sender">{{ message.sender or "Unknown sender" }}</p>
+                        <h4>{{ message.subject or "(No subject)" }}</h4>
+                        <p class="snippet">{{ message.snippet or message.normalized_text[:180] }}</p>
+                    </div>
+                    <div class="message-meta">
+                        {% if message.classification %}
+                            <span class="pill {{ message.classification.verdict }}">{{ message.classification.verdict }}</span>
+                            <span>{{ message.classification.confidence|percentfmt }}</span>
+                        {% else %}
+                            <span class="pill pending">pending</span>
+                        {% endif %}
+                        <span>{{ message.received_at|datetimefmt }}</span>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="empty-state">No messages have been scanned yet. Connect Gmail and run your first sync.</p>
+    {% endif %}
+</section>
+{% endblock %}
